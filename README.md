@@ -10,7 +10,7 @@ conda activate gromacs_env
 ```
 
 - **GROMACS 2026.3** — GPU-accelerated (CUDA, compiled for sm_61+)
-- **MDAnalysis** — Python trajectory analysis
+- **MDAnalysis 2.10** — Python trajectory analysis
 - **MDTraj** — Additional trajectory I/O
 - **Jupyter** — Notebook interface
 
@@ -45,11 +45,25 @@ Production trajectory (prod.xtc)
 
 Each notebook has a configuration cell at the top — edit paths and parameters,
 then run cells sequentially. For membrane proteins, set `MEMBRANE_SIMULATION = True`
-(preparation notebook) and use CHARMM-GUI Membrane Builder outputs.
+(01_preparation.ipynb) and use CHARMM-GUI Membrane Builder outputs.
+
+## Force fields
+
+GROMACS 2026.3 conda-forge includes: amber14sb (default), amber99sb-ildn, charmm27.
+CHARMM36m requires manual installation. Set `FORCE_FIELD = "amber14sb"` for soluble proteins.
 
 ## Reference scripts
 
 `data/templates/` contains standalone MDP files for:
-- `minim.mdp` — energy minimization
-- `nvt.mdp` — NVT equilibration
-- `prod.mdp` — production MD (default 100 ns)
+- `minim.mdp` — energy minimization (steepest descent)
+- `nvt.mdp` — NVT equilibration (V-rescale, 310 K)
+- `prod.mdp` — production MD (Parrinello-Rahman, default 100 ns)
+
+## Test data and benchmark
+
+`data/` contains a test system (CB1 receptor, PDB 6N4B chain R, 276 residues).
+See `data/benchmark_results.md` for performance numbers on TITAN Xp.
+
+Input PDB: `data/input.pdb` — cleaned with PDBFixer, ready for pdb2gmx.
+Example run output: `data/my_protein_prep/` (minimized) and `data/my_protein_md/` (100 ps production).
+Analysis output: `data/my_protein_analysis/plots/`.
